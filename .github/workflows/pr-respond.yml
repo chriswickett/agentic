@@ -27,6 +27,10 @@ jobs:
         env:
           SKILLS_REPO_PAT: ${{ secrets.SKILLS_REPO_PAT }}
 
+      - name: Configure Chrome DevTools MCP
+        run: |
+          echo '{"mcpServers":{"chrome-devtools":{"type":"stdio","command":"npx","args":["chrome-devtools-mcp@latest"]}}}' > ~/.claude.json
+
       - name: Install Claude CLI
         run: npm install -g @anthropic-ai/claude-code
 
