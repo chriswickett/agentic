@@ -22,8 +22,9 @@ Wait for the user's response before proceeding, unless they have already told yo
 ### 2. Read and understand the plan
 
 - Read the entire plan file
+- Check any AI.md, CLAUDE.md, WARP.md files in the repo to learn about project-specific AI practices
 - Review code examples, acceptance criteria, and visual references
-- Check the code references and be aggressive with reading as many files in the repo as you need to understand how things are currently done
+- Check code references in the repo. Gather an understanding how things are currently done
 - Understand the scope and approach
 
 ### 3. Create TODO list
@@ -37,6 +38,7 @@ Work through the TODO list:
 - Reference visual designs if provided
 - Implement changes systematically
 - Mark each TODO as done when complete
+- Leave any test code/pages/examples you create in place for user to review
 
 ### 5. Validate
 
@@ -53,7 +55,7 @@ Work through the TODO list:
 
 ### 6. Summary
 
-Provide a brief summary of what was implemented, focused on the changes made rather than restating code.
+Provide a brief summary of what was implemented, focused on the changes made rather than restating code. The summary should include which page/url/code the user should review (as an entry point)
 
 ## Key principles
 

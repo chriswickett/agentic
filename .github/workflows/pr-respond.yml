@@ -5,8 +5,6 @@ on:
     secrets:
       ANTHROPIC_API_KEY:
         required: true
-      SKILLS_REPO_PAT:
-        required: true
 
 jobs:
   pr-respond:
@@ -15,17 +13,13 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Checkout PR branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
       - name: Clone skills repo
-        run: |
-          git clone https://x-access-token:${{ secrets.SKILLS_REPO_PAT }}@github.com/chriswickett/agentic.git /tmp/skills
-        env:
-          SKILLS_REPO_PAT: ${{ secrets.SKILLS_REPO_PAT }}
+        run: git clone https://github.com/chriswickett/agentic.git /tmp/skills
 
       - name: Configure Chrome DevTools MCP
         run: |
