@@ -25,7 +25,10 @@ jobs:
 
       - name: Gather review context
         id: context
+        env:
+          GH_TOKEN: ${{ secrets.AGENTIC_BOT_TOKEN }}
         run: |
+          
           PR_NUMBER=${{ github.event.pull_request.number }}
           PR_META=$(gh pr view "$PR_NUMBER" --json number,title,body,headRefName)
           echo "pr_meta<<GHEOF" >> "$GITHUB_OUTPUT"
