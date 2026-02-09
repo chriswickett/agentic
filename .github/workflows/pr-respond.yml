@@ -54,20 +54,15 @@ jobs:
           REVIEW_BODY: ${{ github.event.review.body }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_META: ${{ steps.context.outputs.pr_meta }}
-          REVIEWS: ${{ steps.context.outputs.reviews }}
         run: |
           cat <<CTX_EOF > /tmp/context.txt
-          PR metadata:
+          DRY RUN: This is a test prompt. Please just tell me what the weather in Cardiff is and also what the PR review body is. Don't spend very long on this. A simple trivial task, you don't need to read everything.
+
+          Here is some metadata about the PR:
           $PR_META
-
-          Reviews:
-          $REVIEWS
-
           Review state: $REVIEW_STATE
           Review body: $REVIEW_BODY
           PR number: $PR_NUMBER
           CTX_EOF
 
-          cat /tmp/context.txt | claude -p \
-            --allowedTools "Read" "Edit" "Write" "Glob" "Grep" \
-            "DRY RUN: This is a test prompt. Please just tell me what the weather in Cardiff is and also what the review body is. Don't spend very long on this. A simple trivial task, you don't need to read everything."
+          cat /tmp/context.txt | claude -p --allowedTools "Read" "Edit" "Write" "Glob" "Grep"
