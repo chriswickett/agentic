@@ -87,6 +87,18 @@ jobs:
           name: pr-context
           path: /tmp
 
+      - name: Install dependencies
+        run: |
+          if [ -f "pnpm-lock.yaml" ]; then
+            npm install -g pnpm
+            pnpm install --frozen-lockfile
+          elif [ -f "package-lock.json" ]; then
+            npm ci
+          elif [ -f "yarn.lock" ]; then
+            npm install -g yarn
+            yarn install --frozen-lockfile
+          fi
+
       - name: Configure Chrome DevTools MCP
         run: |
           echo '{"mcpServers":{"chrome-devtools":{"type":"stdio","command":"npx","args":["chrome-devtools-mcp@latest"]}}}' > ~/.claude.json
