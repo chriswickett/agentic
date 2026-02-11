@@ -20,7 +20,11 @@ jq -s -r '
     elif .type=="user" and .message.content then
       [.message.content[] |
         if .type=="tool_result" then
-          "(success)"
+          if .content then
+            ("→ " + (.content | tostring | .[0:100] | gsub("\n"; " ")))
+          else
+            "(success)"
+          end
         else
           empty
         end
