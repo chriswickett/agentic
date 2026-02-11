@@ -44,7 +44,7 @@ jobs:
           $(cat /tmp/context.txt)
           TRIAGE_EOF
 
-          DECISION=$(cat /tmp/triage_outcome.txt | tr -d '[:space:]')
+          DECISION=$(grep -oE '(STOP|CONTINUE)' /tmp/triage_outcome.txt | tail -1)
           echo "decision=$DECISION" >> "$GITHUB_OUTPUT"
           echo "Triage decision: $DECISION"
 
