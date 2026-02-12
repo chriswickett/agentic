@@ -86,9 +86,17 @@ Runs when a PR comment starts with `@claude`:
 4. Claude reads the comment, explores the codebase as needed, and writes a response
 5. The workflow posts the response as a PR comment
 
-### 6. pr-merge (coming soon)
+### 6. pr-merge (GitHub Actions, GClaude)
 
-Auto-merge on approval is being extracted into its own workflow (`pr-approved.yml`). When complete, approving a PR with `@claude` will trigger Claude to write a clean squash-merge commit message and merge automatically.
+Runs when a review with `approved` starts with `@claude`:
+
+1. Checks out the repo at the PR branch
+2. Runs `gather-pr-context` to collect PR data, reviews, comments, and commit history into `context.txt`
+3. Runs Claude with the pr-merge skill
+4. Claude reads progress.txt and commit history, writes a clean commit message
+5. The workflow squash-merges the PR with that message
+
+The messy history of fix commits disappears. Main gets one clean commit.
 
 ## progress.txt
 
@@ -167,8 +175,9 @@ Before using this workflow with a client repo:
 
 2. **Allow squash merging**: Same section, make sure "Allow squash merging" is ON.
 
-3. **Add the workflow file**: Create `.github/workflows/pr-changes-requested.yml` that calls the reusable workflow:
+3. **Add workflow files**: Create three workflow files in `.github/workflows/`:
 
+   `pr-changes-requested.yml`:
    ```yaml
    on:
      pull_request_review:
@@ -177,6 +186,34 @@ Before using this workflow with a client repo:
    jobs:
      pr-changes-requested:
        uses: chriswickett/agentic/.github/workflows/pr-changes-requested.yml@main
+       secrets:
+         CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+         AGENTIC_BOT_TOKEN: ${{ secrets.AGENTIC_BOT_TOKEN }}
+   ```
+
+   `pr-approved.yml`:
+   ```yaml
+   on:
+     pull_request_review:
+       types: [submitted]
+
+   jobs:
+     pr-approved:
+       uses: chriswickett/agentic/.github/workflows/pr-approved.yml@main
+       secrets:
+         CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+         AGENTIC_BOT_TOKEN: ${{ secrets.AGENTIC_BOT_TOKEN }}
+   ```
+
+   `pr-commented.yml`:
+   ```yaml
+   on:
+     issue_comment:
+       types: [created]
+
+   jobs:
+     pr-commented:
+       uses: chriswickett/agentic/.github/workflows/pr-commented.yml@main
        secrets:
          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
          AGENTIC_BOT_TOKEN: ${{ secrets.AGENTIC_BOT_TOKEN }}
