@@ -12,19 +12,17 @@ jq -s -r '
         if .type=="text" then
           .text
         elif .type=="tool_use" then
-          (.name + ": " + (.input.file_path // .input.command // .input.pattern // ""))
-        else
-          empty
-        end
-      ] | map(. + "  [\($tokens)]") | .[]
-    elif .type=="user" and .message.content then
-      [.message.content[] |
-        if .type=="tool_result" then
-          if .content then
-            ("→ " + (.content | tostring | .[0:100] | gsub("\n"; " ")))
-          else
-            "(success)"
-          end
+          (.name + ": " + (
+            if .input.file_path then
+              (.input.file_path | split("/") | last)
+            elif .input.command then
+              .input.command
+            elif .input.pattern then
+              .input.pattern
+            else
+              ""
+            end
+          ))
         else
           empty
         end
@@ -32,7 +30,7 @@ jq -s -r '
     else
       empty
     end
-  ) | join("\n")),
+  ) | join("\n\n")),
   (if $total_cost > 0 then
     "\nTotal cost: $\($total_cost | . * 100 | round / 100)"
   else
