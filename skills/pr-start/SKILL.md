@@ -1,50 +1,79 @@
 ---
 name: pr-start
-description: Executes a plan and opens a PR. Creates a branch, follows do-work to implement, creates progress.txt, commits, and opens a pull request.
+description: Implements work from a GitHub issue and writes output files for the workflow to commit and open a PR.
 ---
 
 # pr-start
 
-## Trigger
+## Overview
 
-`/pr-start`
+You MUST read this file in its ENTIRETY and follow ALL rules and instructions with no exceptions.
+
+You are an AI agent implementing work described in a GitHub issue. Someone has commented `@claude /pr-start` on the issue, signalling that the plan is agreed and ready to execute.
+
+You are running in a GitHub Actions VM. The user is not present, so you cannot ask them questions. The repo is checked out at main.
+
+You do not have access to any tools other than what is in your allowedTools list. Do not attempt to run any commands not in there.
 
 ## Process
 
-### 1. Find the plan
+### 1. Understand the issue
 
-Ask: "Which plan should I execute?"
+Read the issue context provided in your prompt. The issue body and comments contain the plan. Look for the most recent agreed-upon plan in the conversation — this is what you are implementing.
 
-If there's a `./plans/` directory, list available `.md` files for the user to choose from.
+### 2. Implement
 
-Wait for the user's response, unless they already specified a plan.
+Implement the plan. Read the codebase as needed to understand existing patterns before making changes.
 
-### 2. Configure bot identity
+### 3. Validate
 
-All git and gh commands in this skill must use `git-bot` (located at `bin/git-bot` in the skills repo). Use `git-bot git ...` instead of `git ...` and `git-bot gh ...` instead of `gh ...`.
+After making changes, verify they work. If you need to start a server, use the RULES section below.
 
-### 3. Create a branch
+If errors appear, fix them and re-validate.
 
-Create a branch named after the plan file, e.g. `plans/add-signup-button` for `add-signup-button.md`.
+### 4. Write branch name
 
-### 4. Execute the plan
+Write a branch name to `/tmp/pr_branch_name.txt`. The format is `prefix/concise-spinal-case` where:
 
-Read `../do-work/SKILL.md` (from the skills repo) and follow its instructions to execute the chosen plan.
+- The prefix follows commit conventions (feat, fix, docs, refactor, style, test, build, ci, perf)
+- The name is a concise, spinal-cased summary derived from the issue title
 
-### 5. Create progress.txt
+Example: `feat/add-signup-button`, `fix/header-overflow`
 
-Create `./plans/progress.txt` with:
+### 5. Write commit message
 
-```
-## Initial Implementation - {timestamp}
-Plan: {plan-filename.md}
-Summary: {brief description of what was implemented}
-```
+Write a commit message to `/tmp/commit_msg.txt` following these conventions:
 
-### 6. Commit
+- Standard prefix (feat:, fix:, docs:, refactor:, etc.)
+- Subject capitalised after colon, imperative mood, under 50 characters
+- Body explains why, not just what
+- 72 character wrap for body lines
+- No co-author credit
 
-Read `../commit/SKILL.md` and follow its process for committing. Ignore any steps that require user input - you are making decisions autonomously here. The first line of the commit body (after the subject line and blank line) must be `plan: {plan-filename.md}`.
+### 6. Write PR comment
 
-### 7. Push and open PR
+Write a concise paragraph to `/tmp/pr_comment.txt` explaining what was implemented.
 
-Push the branch and open a PR using `gh pr create`. The PR title should be a concise summary of the plan. The PR body should briefly describe what was implemented.
+### 7. Finishing up
+
+Check that all three files have been created and populated:
+- `/tmp/pr_branch_name.txt`
+- `/tmp/commit_msg.txt`
+- `/tmp/pr_comment.txt`
+
+You should consider that you have failed until all three have been created.
+
+Instead of outputting a summary, just output the same text you wrote as the PR comment.
+
+## RULES
+
+### Starting servers or processes
+
+If you need to start a server or a process, you must ONLY start it with the background script `bg`. Do not use ANY other method to start a server or a process, under any circumstances, even if you think it will work. This is not optional.
+
+1. Start the process(es) with the bg script: `/tmp/skills/bin/bg command here with args` — note the LOG path it outputs. The repo's CLAUDE.md file may have instructions on what command you should background.
+2. If the process is a server, poll until ready, eg, `curl -s http://localhost:3000`. Otherwise proceed with step 3. Do NOT use sleep. If you assess that the process isn't ready, try again (one or twice).
+3. Use the Read tool to read the log file for errors or warnings.
+4. When done, stop the process: `/tmp/skills/bin/bg-stop <pidfile>` using the PIDFILE path from step 1
+
+Do not use any other process or workflow for starting processes or reading the log file, even if the above fails. Follow THESE instructions only.

@@ -6,7 +6,8 @@ Reusable Claude Code skills and GitHub Actions workflows for automated PR lifecy
 
 - **plan-work** — creates plans through structured conversation
 - **do-work** — executes plans
-- **pr-start** — creates branch, executes plan, commits, and opens a PR
+- **pr-start** — implements work from a GitHub issue, writes output files for the workflow to commit and open a PR
+- **pr-start-local** — creates branch, executes plan, commits, and opens a PR (local use)
 - **pr-fix** — fixes code based on reviewer feedback
 - **gh-respond** — answers questions and responds to PR or issue comments
 - **pr-merge** — writes clean commit message for squash-merging approved PRs
@@ -216,6 +217,20 @@ Before using this workflow with a client repo:
    jobs:
      gh-commented:
        uses: chriswickett/agentic/.github/workflows/gh-commented.yml@main
+       secrets:
+         CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+         AGENTIC_BOT_TOKEN: ${{ secrets.AGENTIC_BOT_TOKEN }}
+   ```
+
+   `gh-start-work.yml`:
+   ```yaml
+   on:
+     issue_comment:
+       types: [created]
+
+   jobs:
+     gh-start-work:
+       uses: chriswickett/agentic/.github/workflows/gh-start-work.yml@main
        secrets:
          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
          AGENTIC_BOT_TOKEN: ${{ secrets.AGENTIC_BOT_TOKEN }}
