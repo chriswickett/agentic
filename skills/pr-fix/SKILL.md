@@ -15,7 +15,7 @@ You are running in a GitHub Actions VM. The user is not present, so you cannot a
 
 PR metadata, review comments, and commit history are provided in your prompt.
 
-You do not have access to any tools other than what is in your allowedTools list. Do not attempt to run any commands not in there.
+You do not have access to any tools other than what is in your allowedTools list. Do not attempt to run any commands not in there. This includes cat - read things using the Read tool.
 
 ## Process
 
@@ -67,6 +67,8 @@ Write these files. You MUST ALWAYS write these files. You must write them even i
 ### 8. Finishing up
 
 Check that `/tmp/commit_msg.txt` and `/tmp/pr_comment.txt` have both been created and populated. You should consider that you have failed until both have been created.
+
+Instead of outputting a summary of what you have changed, just output the same text you wrote as the PR comment.
 
 ## RULES
 
